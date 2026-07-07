@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mammalian Kidney Anatomy & Physiology — Study Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Literata:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0D1210;
+    --panel:#161C19;
+    --panel-2:#1B231F;
+    --line:#2A342E;
+    --text:#EAEFE9;
+    --muted:#93A499;
+
+    --filt:#D9A441;      /* filtration / nephron — gold like concentrating filtrate */
+    --filt-dim:#332708;
+    --vasc:#4A8FB8;      /* vascular supply — arterioles, arcuate/interlobar vessels */
+    --vasc-dim:#122430;
+    --struct:#5FA88C;    /* structural regions — cortex, medulla, capsule, pyramid */
+    --struct-dim:#0F2A22;
+    --collect:#9B7EDE;   /* collecting system — calyx, pelvis, ureter */
+    --collect-dim:#241C38;
+    --proc:#8B8F87;      /* lab protocol / non-anatomical */
+    --proc-dim:#232620;
+
+    --mono:'IBM Plex Mono', monospace;
+    --serif:'Literata', serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--serif);}
+  ::selection{background:var(--filt-dim); color:var(--filt);}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    padding:56px 24px 40px;
+    background:
+      linear-gradient(180deg, rgba(217,164,65,0.05), transparent 60%),
+      repeating-linear-gradient(0deg, rgba(147,164,153,0.05) 0 1px, transparent 1px 24px),
+      repeating-linear-gradient(90deg, rgba(147,164,153,0.05) 0 1px, transparent 1px 24px);
+    border-bottom:1px solid var(--line);
+    overflow:hidden;
+  }
+  .hero-top{
+    display:flex; align-items:center; justify-content:space-between;
+    font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--muted); margin-bottom:28px; flex-wrap:wrap; gap:8px;
+  }
+  .lead-tag{color:var(--filt);}
+  .status{color:var(--text); font-weight:600;}
+  .status span{color:var(--filt);}
+  .hero h1{
+    font-family:var(--serif); font-weight:600; font-size:clamp(32px,5vw,54px);
+    margin:0 0 10px; line-height:1.05; letter-spacing:-0.01em;
+  }
+  .hero p{ color:var(--muted); max-width:620px; font-size:16px; line-height:1.6; margin:0 0 28px;}
+  .flow-wrap{ width:100%; height:100px; }
+  .flow-wrap svg{width:100%; height:100%; display:block;}
+  .flow-in{ stroke:var(--vasc); }
+  .flow-filt{ stroke:var(--filt); stroke-dasharray:6 8; animation:drip 1.6s linear infinite; }
+  .flow-out{ stroke:var(--collect); }
+  .flow-in, .flow-filt, .flow-out{ fill:none; stroke-width:2.5; stroke-linecap:round; }
+  @keyframes drip{ to{ stroke-dashoffset:-28; } }
+  .flow-label{ font-family:var(--mono); font-size:9px; letter-spacing:.06em; text-transform:uppercase; fill:var(--muted); }
+  .legend{display:flex; gap:18px; margin-top:22px; flex-wrap:wrap; font-family:var(--mono); font-size:11px; letter-spacing:.06em; color:var(--muted);}
+  .legend .dot{display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; vertical-align:middle;}
+  .dot-filt{background:var(--filt);}
+  .dot-vasc{background:var(--vasc);}
+  .dot-struct{background:var(--struct);}
+  .dot-collect{background:var(--collect);}
+
+  /* ---------- NAV ---------- */
+  .tabbar{
+    position:sticky; top:0; z-index:10;
+    display:flex; gap:2px; background:var(--panel); border-bottom:1px solid var(--line);
+    padding:0 24px; overflow-x:auto;
+  }
+  .tab{
+    font-family:var(--mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--muted); background:none; border:none; padding:16px 18px; cursor:pointer;
+    border-bottom:2px solid transparent; white-space:nowrap; transition:color .15s, border-color .15s;
+  }
+  .tab:hover{color:var(--text);}
+  .tab.active{color:var(--filt); border-bottom-color:var(--filt);}
+
+  main{max-width:920px; margin:0 auto; padding:44px 24px 90px;}
+  .view{display:none;}
+  .view.active{display:block; animation:fadein .3s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+  .section-eyebrow{
+    font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--filt); margin-bottom:8px;
+  }
+  .section-title{font-family:var(--serif); font-size:26px; font-weight:600; margin:0 0 6px;}
+  .section-sub{color:var(--muted); font-size:14.5px; margin:0 0 30px; line-height:1.6; max-width:620px;}
+
+  /* ---------- QUIZ / FLIP CARDS ---------- */
+  .quiz-grid{display:flex; flex-direction:column; gap:14px;}
+  .flip-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    padding:20px 22px; cursor:pointer; transition:border-color .2s, background .2s;
+    position:relative;
+  }
+  .flip-card:hover{border-color:var(--line); background:var(--panel-2);}
+  .flip-card.open{border-color:var(--filt-dim);}
+  .fc-head{display:flex; align-items:flex-start; gap:14px;}
+  .fc-num{font-family:var(--mono); font-size:12px; color:var(--muted); padding-top:3px; min-width:22px;}
+  .fc-q{font-size:16.5px; line-height:1.5; flex:1;}
+  .fc-badge{
+    font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase;
+    padding:3px 8px; border-radius:20px; white-space:nowrap; margin-top:2px;
+  }
+  .badge-filt{background:var(--filt-dim); color:var(--filt);}
+  .badge-vasc{background:var(--vasc-dim); color:var(--vasc);}
+  .badge-struct{background:var(--struct-dim); color:var(--struct);}
+  .badge-collect{background:var(--collect-dim); color:var(--collect);}
+  .badge-proc{background:var(--proc-dim); color:var(--proc);}
+  .fc-answer{
+    max-height:0; overflow:hidden; transition:max-height .35s ease, opacity .3s ease, margin-top .3s ease;
+    opacity:0; font-size:15px; line-height:1.65; color:var(--muted); border-top:1px dashed var(--line);
+    margin-top:0; padding-top:0;
+  }
+  .flip-card.open .fc-answer{max-height:400px; opacity:1; margin-top:16px; padding-top:16px;}
+
+  /* ---------- ESSAY ACCORDION ---------- */
+  .essay-list{display:flex; flex-direction:column; gap:12px;}
+  .essay-item{background:var(--panel); border:1px solid var(--line); border-radius:10px; overflow:hidden;}
+  .essay-trigger{
+    width:100%; text-align:left; background:none; border:none; color:var(--text);
+    padding:18px 22px; font-family:var(--serif); font-size:16.5px; cursor:pointer;
+    display:flex; justify-content:space-between; gap:16px; align-items:center;
+  }
+  .essay-trigger .plus{font-family:var(--mono); color:var(--filt); font-size:18px; transition:transform .25s;}
+  .essay-item.open .plus{transform:rotate(45deg);}
+  .essay-body{max-height:0; overflow:hidden; transition:max-height .35s ease;}
+  .essay-body-inner{padding:0 22px 20px; color:var(--muted); font-size:14.5px; line-height:1.65;}
+  .essay-item.open .essay-body{max-height:220px;}
+
+  /* ---------- GLOSSARY ---------- */
+  .glossary-controls{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:26px;}
+  .g-search{
+    flex:1; min-width:180px; background:var(--panel); border:1px solid var(--line); color:var(--text);
+    padding:10px 14px; border-radius:8px; font-family:var(--mono); font-size:13px; outline:none;
+  }
+  .g-search:focus{border-color:var(--filt-dim);}
+  .g-filter{
+    font-family:var(--mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+    background:var(--panel); border:1px solid var(--line); color:var(--muted);
+    padding:9px 14px; border-radius:8px; cursor:pointer;
+  }
+  .g-filter.active{color:var(--bg); background:var(--filt); border-color:var(--filt);}
+  .glossary-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:12px;}
+  .g-card{
+    background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--muted);
+    border-radius:8px; padding:16px 18px;
+  }
+  .g-card.cat-filt{border-left-color:var(--filt);}
+  .g-card.cat-vasc{border-left-color:var(--vasc);}
+  .g-card.cat-struct{border-left-color:var(--struct);}
+  .g-card.cat-collect{border-left-color:var(--collect);}
+  .g-term{font-family:var(--mono); font-size:13px; font-weight:600; color:var(--text); margin-bottom:6px; letter-spacing:.02em;}
+  .g-def{font-size:14px; line-height:1.55; color:var(--muted);}
+  .g-empty{color:var(--muted); font-family:var(--mono); font-size:13px; padding:20px 0;}
+
+  @media (max-width:560px){
+    .hero{padding:40px 16px 28px;}
+    main{padding:32px 16px 70px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-top">
+    <span><span class="lead-tag">●</span> RENAL CORPUSCLE &nbsp; NEPHRON FLOW</span>
+    <span class="status">STATUS: <span id="statusVal">FILTERING</span></span>
+  </div>
+  <h1>Mammalian Kidney<br>Anatomy & Physiology</h1>
+  <p>A study guide for the kidney's architecture and its work — filtering blood, reclaiming what the body needs, and concentrating the rest into urine. Follow the flow, then test what you know.</p>
+  <div class="flow-wrap">
+    <svg viewBox="0 0 1400 100" preserveAspectRatio="none">
+      <!-- afferent arteriole in -->
+      <path class="flow-in" d="M0,50 L280,50"/>
+      <text class="flow-label" x="10" y="38">afferent — blood in</text>
+      <!-- glomerulus loop -->
+      <path class="flow-in" d="M280,50 C300,20 340,20 360,50 C380,80 420,80 440,50 C460,20 500,20 520,50" />
+      <!-- efferent arteriole out -->
+      <path class="flow-out" d="M520,50 L760,50"/>
+      <text class="flow-label" x="600" y="38">efferent — blood out</text>
+      <!-- filtrate branch down into tubule -->
+      <path class="flow-filt" d="M400,65 L400,95 L1400,95"/>
+      <text class="flow-label" x="410" y="88">filtrate → tubule → collecting duct</text>
+    </svg>
+  </div>
+  <div class="legend">
+    <span><span class="dot dot-filt"></span>Filtration / nephron</span>
+    <span><span class="dot dot-vasc"></span>Vascular supply</span>
+    <span><span class="dot dot-struct"></span>Structural regions</span>
+    <span><span class="dot dot-collect"></span>Collecting system</span>
+  </div>
+</div>
+
+<div class="tabbar">
+  <button class="tab active" data-view="quiz">Quiz + Answers</button>
+  <button class="tab" data-view="essay">Essay Prompts</button>
+  <button class="tab" data-view="glossary">Glossary</button>
+</div>
+
+<main>
+
+  <!-- QUIZ VIEW -->
+  <section id="quiz" class="view active">
+    <div class="section-eyebrow">Dissection &amp; Anatomy Quiz</div>
+    <h2 class="section-title">Quiz — tap a question to reveal the answer</h2>
+    <p class="section-sub">Ten questions from the source material, tagged by which part of the kidney's system they belong to.</p>
+    <div class="quiz-grid" id="quizGrid"></div>
+  </section>
+
+  <!-- ESSAY VIEW -->
+  <section id="essay" class="view">
+    <div class="section-eyebrow">Essay Format Questions</div>
+    <h2 class="section-title">Essay prompts</h2>
+    <p class="section-sub">No answers are provided for these in the source material — they're for synthesis and critical thinking. Each includes a starting steer.</p>
+    <div class="essay-list" id="essayList"></div>
+  </section>
+
+  <!-- GLOSSARY VIEW -->
+  <section id="glossary" class="view">
+    <div class="section-eyebrow">Glossary</div>
+    <h2 class="section-title">Key terms</h2>
+    <p class="section-sub">Search by term, or filter by system. Border color matches the legend above.</p>
+    <div class="glossary-controls">
+      <input class="g-search" id="gSearch" type="text" placeholder="Search terms or definitions…">
+      <button class="g-filter active" data-cat="all">All</button>
+      <button class="g-filter" data-cat="filt">Filtration</button>
+      <button class="g-filter" data-cat="vasc">Vascular</button>
+      <button class="g-filter" data-cat="struct">Structural</button>
+      <button class="g-filter" data-cat="collect">Collecting</button>
+    </div>
+    <div class="glossary-grid" id="glossaryGrid"></div>
+    <div class="g-empty" id="gEmpty" style="display:none;">No terms match that search.</div>
+  </section>
+
+</main>
+
+<script>
+const quizData = [
+  {cat:'filt', badge:'Function · osmoregulation', q:"What are the primary functions of the kidney within the urinary system?", a:"The kidneys serve as the primary organs for osmoregulation — controlling solutes and ions in the blood and body fluids. They filter waste products and excess fluids from the blood to produce urine, and also secrete hormones that regulate blood pressure, red blood cell production, and bone health."},
+  {cat:'filt', badge:'Renal corpuscle', q:"Describe the structural difference and functional relationship between the glomerulus and the glomerular (Bowman's) capsule.", a:"The glomerulus is a network of capillaries where blood filtration occurs, while the glomerular capsule is the structure that encloses it. Together they form the renal corpuscle, where the capsule filters out large molecules and cellular material, allowing only filtrate to pass into the renal tubule."},
+  {cat:'vasc', badge:'Vascular · afferent/efferent', q:"How does the diameter of the afferent and efferent arterioles contribute to the filtration process?", a:"The afferent arteriole, which brings blood into the glomerulus, has a larger diameter than the efferent arteriole, which carries blood away. This difference in size creates high pressure within the glomerular capillaries, forcing water, salts, and waste products out of the blood and into the capsule as filtrate."},
+  {cat:'collect', badge:'Collecting system', q:"Explain the path of urine from the point of production in the renal lobes to its exit from the kidney.", a:"Urine is produced in the renal lobes and discharged from the renal papilla into a minor calyx. Multiple minor calyces merge into a major calyx, which empties into the renal pelvis — a large cavity that directs urine out of the kidney through the ureter."},
+  {cat:'filt', badge:'Nephron loop', q:"What is the functional significance of the nephron loop (loop of Henle) regarding filtrate concentration?", a:"The descending limb allows water to flow out of the filtrate via osmosis, gradually concentrating the fluid. The ascending limb is impermeable to water but allows ions to be removed, maintaining the concentration gradient without diluting the filtrate."},
+  {cat:'struct', badge:'Structural · cortex vs. medulla', q:"Distinguish between the renal cortex and the renal medulla in terms of location and internal structures.", a:"The renal cortex is the outer region, containing the glomeruli and some renal tubules, protected by the renal capsule. The renal medulla is the inner portion, consisting of cone-shaped renal pyramids and collecting ducts that transport urine toward the renal pelvis."},
+  {cat:'filt', badge:'Tubule function', q:"What are the specific roles of the proximal and distal convoluted tubules?", a:"The proximal convoluted tubule selectively reabsorbs nutrients and salts from the filtrate back into the peritubular capillaries. The distal convoluted tubule further adjusts solute concentrations and recovers additional water before the filtrate enters the collecting duct."},
+  {cat:'filt', badge:'Function · systemic health', q:"List three systemic health consequences that occur when the kidneys are damaged and unable to function properly.", a:"Kidney damage leads to a buildup of toxins and waste products in the body and the accumulation of excess fluids. It can also result in dangerously high blood pressure and weakened bones due to the loss of hormonal regulation."},
+  {cat:'struct', badge:'Structural', q:"Describe the appearance and purpose of the renal capsule.", a:"The renal capsule is a thin, transparent, but tough layer of connective tissue that adheres closely to the external surface of the kidney. Its primary purpose is to protect the kidney from damage and help maintain its characteristic bean-like shape."},
+  {cat:'proc', badge:'Lab protocol', q:"What safety and disposal protocols must be followed when performing a mammalian kidney dissection?", a:"Participants must wear personal protective equipment — goggles, gloves, and aprons — and use only approved dissecting trays. Afterward, work surfaces must be sanitized with a non-bleach disinfectant like isopropyl alcohol, and specimens must be disposed of according to specific institutional protocols, such as VSC Carcass Disposal."}
+];
+
+const essayData = [
+  {q:"Form and Function", hint:"Discuss how the microscopic structure of the nephron is specifically adapted to perform filtration, reabsorption, and secretion.", steer:"Walk through the renal corpuscle (glomerulus + capsule) as the filtration site, then the tubule segments as reabsorption/secretion sites — structure and job at each stop."},
+  {q:"The Vascular-Excretory Interface", hint:"Trace the complete path of a blood cell from the renal artery to the renal vein, explaining why the proximity of the peritubular capillaries to the renal tubules is essential.", steer:"Sequence it: renal artery → interlobar → arcuate → afferent arteriole → glomerulus → efferent arteriole → peritubular capillaries → arcuate vein → interlobar vein → renal vein. Tie the peritubular proximity directly to reabsorption."},
+  {q:"Homeostatic Regulation", hint:"Evaluate the kidney's role as more than a waste-removal organ — how it interacts with other systems to regulate blood pressure and bone density.", steer:"Use the hormone-secretion function named in question 1 and question 8's consequences of kidney damage as your two anchor points."},
+  {q:"Clinical Correlation", hint:"Based on Adult Polycystic Kidney Disease symptoms, explain how cysts in the renal cortex would disrupt urine production and blood filtration.", steer:"Since the cortex houses the glomeruli, reason through what happens to filtration when cysts physically crowd or displace renal corpuscles there."},
+  {q:"Comparative Methodology", hint:"Compare virtual versus on-campus kidney dissection requirements. Why are specific preserved specimens preferred for educational settings?", steer:"Anchor the specimen-preference half in the safety and disposal protocols from question 10 — preservation and handling standards are part of why a specific specimen type gets chosen."}
+];
+
+const glossaryData = [
+  {t:"Afferent Arteriole", d:"The vessel that supplies blood directly to the glomerulus for filtration.", cat:"vasc"},
+  {t:"Arcuate Artery/Vein", d:"Vessels located at the boundary between the renal cortex and the renal medulla.", cat:"vasc"},
+  {t:"Calyx", d:"A cup-like division in the renal medulla; minor calyces collect urine from papillae and empty into major calyces.", cat:"collect"},
+  {t:"Collecting Duct", d:"A tube that receives urine from multiple nephrons and conveys it toward the renal pelvis.", cat:"collect"},
+  {t:"Efferent Arteriole", d:"The vessel that drains blood away from the glomerulus after filtration has occurred.", cat:"vasc"},
+  {t:"Glomerulus", d:"A specialized network of capillaries within the nephron that acts as the primary site of blood filtration.", cat:"filt"},
+  {t:"Hilus", d:"The indentation on the medial side of the kidney where the renal artery, renal vein, and ureter enter or exit.", cat:"struct"},
+  {t:"Interlobar Artery/Vein", d:"Vessels that pass through the renal columns to supply or drain the renal lobes.", cat:"vasc"},
+  {t:"Nephron", d:"The functional unit of the kidney, consisting of a renal corpuscle and a renal tubule; responsible for forming urine.", cat:"filt"},
+  {t:"Peritubular Capillaries", d:"A capillary network surrounding the renal tubules, involved in the reabsorption and secretion of substances.", cat:"vasc"},
+  {t:"Renal Capsule", d:"A layer of dense, irregular connective tissue that protects the kidney and maintains its shape.", cat:"struct"},
+  {t:"Renal Corpuscle", d:"The unit composed of the glomerulus and the glomerular (Bowman's) capsule; the site where blood is filtered.", cat:"filt"},
+  {t:"Renal Cortex", d:"The outer, granular-textured region of the kidney.", cat:"struct"},
+  {t:"Renal Lobe", d:"A functional section of the kidney consisting of a renal pyramid, the overlying cortex, and adjacent renal columns.", cat:"struct"},
+  {t:"Renal Medulla", d:"The inner region of the kidney, containing the renal pyramids.", cat:"struct"},
+  {t:"Renal Papilla", d:"The apex or tip of a renal pyramid that discharges urine into a minor calyx.", cat:"collect"},
+  {t:"Renal Pelvis", d:"A large, central cavity that collects urine from the major calyces and funnels it into the ureter.", cat:"collect"},
+  {t:"Renal Pyramid", d:"Cone-shaped structures in the medulla where urine production and concentration occur.", cat:"struct"},
+  {t:"Renal Tubule", d:"The portion of the nephron where the filtrate is processed into urine through reabsorption and secretion.", cat:"filt"},
+  {t:"Ureter", d:"The muscular tube that carries urine from the renal pelvis of the kidney to the urinary bladder.", cat:"collect"}
+];
+
+const badgeClass = {filt:'badge-filt', vasc:'badge-vasc', struct:'badge-struct', collect:'badge-collect', proc:'badge-proc'};
+const catClass = {filt:'cat-filt', vasc:'cat-vasc', struct:'cat-struct', collect:'cat-collect'};
+
+// Build quiz cards
+const quizGrid = document.getElementById('quizGrid');
+quizData.forEach((item, i) => {
+  const card = document.createElement('div');
+  card.className = 'flip-card';
+  card.innerHTML = `
+    <div class="fc-head">
+      <span class="fc-num">${String(i+1).padStart(2,'0')}</span>
+      <span class="fc-q">${item.q}</span>
+      <span class="fc-badge ${badgeClass[item.cat]}">${item.badge}</span>
+    </div>
+    <div class="fc-answer">${item.a}</div>
+  `;
+  card.addEventListener('click', () => card.classList.toggle('open'));
+  quizGrid.appendChild(card);
+});
+
+// Build essay accordion
+const essayList = document.getElementById('essayList');
+essayData.forEach((item, i) => {
+  const el = document.createElement('div');
+  el.className = 'essay-item';
+  el.innerHTML = `
+    <button class="essay-trigger">
+      <span>${i+1}. ${item.q}</span>
+      <span class="plus">+</span>
+    </button>
+    <div class="essay-body"><div class="essay-body-inner"><strong style="color:var(--text)">Prompt:</strong> ${item.hint}<br><br><strong style="color:var(--text)">Where to start:</strong> ${item.steer}</div></div>
+  `;
+  el.querySelector('.essay-trigger').addEventListener('click', () => el.classList.toggle('open'));
+  essayList.appendChild(el);
+});
+
+// Build glossary
+const glossaryGrid = document.getElementById('glossaryGrid');
+const gEmpty = document.getElementById('gEmpty');
+let activeCat = 'all';
+function renderGlossary(){
+  const q = document.getElementById('gSearch').value.trim().toLowerCase();
+  glossaryGrid.innerHTML = '';
+  const filtered = glossaryData.filter(item => {
+    const matchCat = activeCat === 'all' || item.cat === activeCat;
+    const matchQ = !q || item.t.toLowerCase().includes(q) || item.d.toLowerCase().includes(q);
+    return matchCat && matchQ;
+  });
+  gEmpty.style.display = filtered.length ? 'none' : 'block';
+  filtered.forEach(item => {
+    const card = document.createElement('div');
+    card.className = `g-card ${catClass[item.cat]}`;
+    card.innerHTML = `<div class="g-term">${item.t}</div><div class="g-def">${item.d}</div>`;
+    glossaryGrid.appendChild(card);
+  });
+}
+document.getElementById('gSearch').addEventListener('input', renderGlossary);
+document.querySelectorAll('.g-filter').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.g-filter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeCat = btn.dataset.cat;
+    renderGlossary();
+  });
+});
+renderGlossary();
+
+// Tabs
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.view).classList.add('active');
+  });
+});
+
+// Ambient status cycle
+const statusEl = document.getElementById('statusVal');
+const stages = ['FILTERING','REABSORBING','CONCENTRATING','COLLECTING'];
+let si = 0;
+setInterval(() => {
+  si = (si + 1) % stages.length;
+  statusEl.textContent = stages[si];
+}, 2200);
+</script>
+
+</body>
+</html>
